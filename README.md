@@ -52,13 +52,23 @@ To install the module run the following commands:
 git clone https://github.com/vchoutas/torch-mesh-isect
 cd torch-mesh-isect
 ```
-**2. Install the dependencies**
+
+**2. Install torch**
+```Shell
+# for cuda-10.2
+pip install torch==1.9.0+cu102 torchvision==0.10.0+cu102 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
+# for cuda-11.7
+# conda install pytorch==2.0.0 torchvision==0.15.0 torchaudio==2.0.0 pytorch-cuda=11.7 -c pytorch -c nvidia
+```
+
+**3. Install the dependencies**
 ```Shell
 pip install -r requirements.txt 
 ```
-**3. Run the *setup.py* script**
+
+**4. Run the *setup.py* script**
 ```Shell
-python setup.py install
+python setup.py develop
 ```
 
 ## Examples
