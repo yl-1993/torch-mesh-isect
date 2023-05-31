@@ -14,6 +14,7 @@
 
    Contact: ps-license@tuebingen.mpg.de
 */
+#define AT_CHECK TORCH_CHECK
 
 #include <torch/extension.h>
 

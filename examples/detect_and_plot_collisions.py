@@ -21,10 +21,16 @@ from __future__ import division
 
 import sys
 import os
+os.environ['PYOPENGL_PLATFORM'] = 'egl'
 
 import time
 
 import argparse
+
+import cv2
+import matplotlib.pyplot as plt
+
+# os.environ['DISPLAY'] = ':1'
 
 try:
     input = raw_input
@@ -45,6 +51,16 @@ import pyrender
 from mesh_intersection.bvh_search_tree import BVH
 
 
+def as_mesh(scene_or_mesh):
+    if isinstance(scene_or_mesh, trimesh.Scene):
+        mesh = trimesh.util.concatenate([
+            trimesh.Trimesh(vertices=m.vertices, faces=m.faces)
+            for m in scene_or_mesh.geometry.values()])
+    else:
+        mesh = scene_or_mesh
+    return mesh
+
+
 if __name__ == "__main__":
 
     device = torch.device('cuda')
@@ -62,6 +78,7 @@ if __name__ == "__main__":
     max_collisions = args.max_collisions
 
     input_mesh = trimesh.load(mesh_fn)
+    input_mesh = as_mesh(input_mesh)
 
     print('Number of triangles = ', input_mesh.faces.shape[0])
 
@@ -121,4 +138,27 @@ if __name__ == "__main__":
     scene.add(recv_mesh)
     scene.add(intr_mesh)
 
-    pyrender.Viewer(scene, use_raymond_lighting=True, cull_faces=False)
+    # pyrender.Viewer(scene, use_raymond_lighting=True, cull_faces=False)
+
+    # Set up the camera -- z-axis away from the scene, x-axis right, y-axis up
+    camera = pyrender.PerspectiveCamera(yfov=np.pi / 3.0)
+    s = np.sqrt(2)/2
+    camera_pose = np.array([
+           [0.0, -s,   s,   0.3],
+           [1.0,  0.0, 0.0, 0.0],
+           [0.0,  s,   s,   0.35],
+           [0.0,  0.0, 0.0, 1.0],
+        ])
+    scene.add(camera, pose=camera_pose)
+
+    # Set up the light -- a single spot light in the same spot as the camera
+    light = pyrender.SpotLight(color=np.ones(3), intensity=3.0,
+                                   innerConeAngle=np.pi/16.0)
+    scene.add(light, pose=camera_pose)
+
+    r = pyrender.OffscreenRenderer(viewport_width=640, viewport_height=480, point_size=1.0)
+    color, depth = r.render(scene)
+    cv2.imwrite('debug.jpg', color)
+    # plt.figure()
+    # plt.imshow(color)
+    # plt.savefig('debug.jpg')
