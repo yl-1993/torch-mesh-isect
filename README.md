@@ -66,8 +66,16 @@ pip install torch==1.9.0+cu102 torchvision==0.10.0+cu102 torchaudio==0.9.0 -f ht
 pip install -r requirements.txt 
 ```
 
-**4. Run the *setup.py* script**
 ```Shell
+mkdir -p 3rd_party && cd 3rd_party
+git clone https://github.com/NVIDIA/cuda-samples.git
+cd ../
+export CUDA_SAMPLES_INC=$PWD/3rd_party/cuda-samples/Common
+```
+
+**5. Run the *setup.py* script**
+```Shell
+# export CUDA_HOME=/usr/local/cuda-11.3
 python setup.py develop
 ```
 

@@ -21,16 +21,13 @@ from __future__ import division
 
 import sys
 import os
-os.environ['PYOPENGL_PLATFORM'] = 'egl'
+# os.environ['PYOPENGL_PLATFORM'] = 'egl' # use headless rendering
 
 import time
 
 import argparse
 
 import cv2
-import matplotlib.pyplot as plt
-
-# os.environ['DISPLAY'] = ':1'
 
 try:
     input = raw_input
@@ -138,27 +135,25 @@ if __name__ == "__main__":
     scene.add(recv_mesh)
     scene.add(intr_mesh)
 
-    # pyrender.Viewer(scene, use_raymond_lighting=True, cull_faces=False)
+    pyrender.Viewer(scene, use_raymond_lighting=True, cull_faces=False)
 
-    # Set up the camera -- z-axis away from the scene, x-axis right, y-axis up
-    camera = pyrender.PerspectiveCamera(yfov=np.pi / 3.0)
-    s = np.sqrt(2)/2
-    camera_pose = np.array([
-           [0.0, -s,   s,   0.3],
-           [1.0,  0.0, 0.0, 0.0],
-           [0.0,  s,   s,   0.35],
-           [0.0,  0.0, 0.0, 1.0],
-        ])
-    scene.add(camera, pose=camera_pose)
+    # Use headless rendering
+    # # Set up the camera -- z-axis away from the scene, x-axis right, y-axis up
+    # camera = pyrender.PerspectiveCamera(yfov=np.pi / 3.0)
+    # s = np.sqrt(2)/2
+    # camera_pose = np.array([
+    #        [0.0, -s,   s,   0.3],
+    #        [1.0,  0.0, 0.0, 0.0],
+    #        [0.0,  s,   s,   0.35],
+    #        [0.0,  0.0, 0.0, 1.0],
+    #     ])
+    # scene.add(camera, pose=camera_pose)
 
-    # Set up the light -- a single spot light in the same spot as the camera
-    light = pyrender.SpotLight(color=np.ones(3), intensity=3.0,
-                                   innerConeAngle=np.pi/16.0)
-    scene.add(light, pose=camera_pose)
+    # # Set up the light -- a single spot light in the same spot as the camera
+    # light = pyrender.SpotLight(color=np.ones(3), intensity=3.0,
+    #                                innerConeAngle=np.pi/16.0)
+    # scene.add(light, pose=camera_pose)
 
-    r = pyrender.OffscreenRenderer(viewport_width=640, viewport_height=480, point_size=1.0)
-    color, depth = r.render(scene)
-    cv2.imwrite('debug.jpg', color)
-    # plt.figure()
-    # plt.imshow(color)
-    # plt.savefig('debug.jpg')
+    # r = pyrender.OffscreenRenderer(viewport_width=640, viewport_height=480, point_size=1.0)
+    # color, depth = r.render(scene)
+    # cv2.imwrite('debug.jpg', color)
