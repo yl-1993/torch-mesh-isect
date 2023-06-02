@@ -80,7 +80,11 @@ python setup.py develop
 ```
 
 ## Examples
-
+* [Inter-collision Detection](./examples/detect_inter_collisions.py): Given two
+  input mesh files, detect and plot all the inter collisions. Use:
+  ```Shell
+  python examples/detect_inter_collisions.py --fn1 PATH1 --fn2 PATH2
+  ```
 * [Collision Detection](./examples/detect_and_plot_collisions.py): Given an
   input mesh file, detect and plot all the collisions. Use:
   ```Shell
