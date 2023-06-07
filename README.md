@@ -80,6 +80,12 @@ python setup.py develop
 ```
 
 ## Examples
+* [Inter-collision Detection between SMPLX](./examples/detect_inter_smplx_collisions.py): Given two
+  input npy(SMPL-X params) files, detect and plot all the inter collisions. The collision frames and ratio will be recorded.
+  Please prepare SMPLX body_models as save them to `body_models/smplx`. Use:
+  ```Shell
+  python examples/detect_inter_collisions.py --fn1 PATH1 --fn2 PATH2
+  ```
 * [Inter-collision Detection](./examples/detect_inter_collisions.py): Given two
   input mesh files, detect and plot all the inter collisions. Use:
   ```Shell

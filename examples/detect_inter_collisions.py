@@ -58,7 +58,7 @@ def numpy2set(arr):
     return set([tuple(x) for x in arr])
 
 
-def detect_collision(mesh_fn, max_collision):
+def detect_collision(mesh_fn, max_collisions, device, verbose=True):
     if isinstance(mesh_fn, str):
         print(f'Mesh file: {mesh_fn}')
         input_mesh = trimesh.load(mesh_fn)
@@ -68,7 +68,8 @@ def detect_collision(mesh_fn, max_collision):
     else:
         raise TypeError
 
-    print('Number of triangles = ', input_mesh.faces.shape[0])
+    if verbose:
+        print('Number of triangles = ', input_mesh.faces.shape[0])
 
     vertices = torch.tensor(input_mesh.vertices,
                             dtype=torch.float32, device=device)
@@ -85,17 +86,17 @@ def detect_collision(mesh_fn, max_collision):
     start = time.time()
     outputs = m(triangles)
     torch.cuda.synchronize()
-    print('Elapsed time', time.time() - start)
+    if verbose:
+        print(f'Elapsed time: {(time.time() - start) * 1000} ms')
 
     outputs = outputs.detach().cpu().numpy().squeeze()
 
     collisions = outputs[outputs[:, 0] >= 0, :]
 
-    print('Number of collisions = ', collisions.shape[0])
-    print('Percentage of collisions (%)',
-          collisions.shape[0] / float(triangles.shape[1]) * 100)
-    recv_faces = input_mesh.faces[collisions[:, 0]]
-    intr_faces = input_mesh.faces[collisions[:, 1]]
+    if verbose:
+        print('Number of collisions = ', collisions.shape[0])
+        print('Percentage of collisions (%)',
+            collisions.shape[0] / float(triangles.shape[1]) * 100)
 
     return collisions, input_mesh
 
@@ -124,14 +125,14 @@ if __name__ == "__main__":
 
     col2 += input_mesh1.faces.shape[0]
     self_collisions = np.concatenate([col1, col2])
-    
+
     self_col = numpy2set(self_collisions)
     all_col = numpy2set(col12)
 
     collisions = np.array(list(all_col - self_col))
     n_collisions = len(collisions)
     assert n_collisions == (len(all_col) - len(col1) - len(col2))
-    
+
     recv_faces = input_mesh.faces[collisions[:, 0]]
     intr_faces = input_mesh.faces[collisions[:, 1]]
 
